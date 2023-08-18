@@ -1,0 +1,18 @@
+<!--
+this is a row item for image view
+  -->
+<GridLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layoutDirection="ltr" >
+
+    <ImageView
+        android:layout_rowSpan="2"
+        android:layout_width="80dp"
+        android:layout_height="70dp"
+        android:scaleType="fitXY" android:id="@+id/img"
+        android:layout_row="0"
+        android:layout_column="0" />
+
+</GridLayout>
