@@ -14,6 +14,27 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        new Thread(new GetImagesList(this)).start();
+        if (!GetImagesList.hasInstance) {
+            new Thread(new GetImagesList(this)).start();
+        }
     }
+
+    /*
+    private boolean isInFront;
+    public boolean isInFront() {
+        return isInFront;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        isInFront = true;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        isInFront = false;
+    }
+    */
 }

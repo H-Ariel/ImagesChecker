@@ -14,14 +14,19 @@ class GetImagesList implements Runnable {
 	// path of whatsapp images folder
 	static final String root = "/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/WhatsApp Images/";
 
-	String[] specialImagesPaths;
+	ArrayList<String> specialImagesPaths;
 	ArrayList<String> imagesPathsList;
 	AppCompatActivity context;
 
+	static boolean hasInstance = false; // make this class singleton
 
-	public GetImagesList(AppCompatActivity context) {
+	public GetImagesList(MainActivity context) {
+		// make only one instance of this class
+		if (hasInstance) return;
+		hasInstance = true;
+
 		this.context = context;
-		specialImagesPaths = new String[0]; // empty array
+		specialImagesPaths = new ArrayList<>();
 		imagesPathsList = new ArrayList<>();
 
 		File waDir = new File(root); // whatsapp directory
@@ -41,6 +46,11 @@ class GetImagesList implements Runnable {
 	}
 
 	@Override
+	protected void finalize() {
+		hasInstance = false;
+	}
+
+	@Override
 	public void run() {
 		String txt = "scan %d of " + imagesPathsList.size() + " images";
 		int i = 1;
@@ -51,23 +61,21 @@ class GetImagesList implements Runnable {
 
 			// check if image is special
 			if (ImageChecker.isSpecialImage(path)) {
-				addPath(path);
+				specialImagesPaths.add(0, path); // add to the top of the list
+
+				// check if `context` is the current activity
+				if (context == context.getApplicationContext()) {
+					return;
+				}
+
 				context.runOnUiThread(() -> ((ListView) context.findViewById(R.id.list_view)).setAdapter(
 						new CustomImageList(context, specialImagesPaths)
 				));
 			}
 		}
 
-		txt = "finish, " + specialImagesPaths.length + " special images found";
+		txt = "finish, " + specialImagesPaths.size() + " special images found";
 		((TextView) context.findViewById(R.id.tvPercent)).setText(txt);
-	}
-
-	// add new path to the start of `specialImagesPaths`
-	void addPath(String path) {
-		String[] tmp = new String[specialImagesPaths.length + 1];
-		tmp[0] = path;
-		System.arraycopy(specialImagesPaths, 0, tmp, 1, specialImagesPaths.length);
-		specialImagesPaths = tmp;
 	}
 
 	static boolean isImage(File file) {
