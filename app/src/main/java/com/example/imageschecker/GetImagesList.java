@@ -1,8 +1,7 @@
 package com.example.imageschecker;
 
-import android.widget.ListView;
 import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,24 +11,17 @@ import java.util.Comparator;
 class GetImagesList implements Runnable {
 
 	// path of whatsapp images folder
-	static final String root = "/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/WhatsApp Images/";
+	static final String ROOT = "/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/WhatsApp Images/";
 
-	ArrayList<String> specialImagesPaths;
 	ArrayList<String> imagesPathsList;
-	AppCompatActivity context;
-
-	static boolean hasInstance = false; // make this class singleton
+	MainActivity context;
+	int i = 0; // number of images that scanned. its global because its used in run() method and we want save it
 
 	public GetImagesList(MainActivity context) {
-		// make only one instance of this class
-		if (hasInstance) return;
-		hasInstance = true;
-
 		this.context = context;
-		specialImagesPaths = new ArrayList<>();
-		imagesPathsList = new ArrayList<>();
+		this.imagesPathsList = new ArrayList<>();
 
-		File waDir = new File(root); // whatsapp directory
+		File waDir = new File(ROOT); // whatsapp directory
 		if (!waDir.exists()) return;
 		File[] filesList = waDir.listFiles();
 		if (filesList == null) return;
@@ -40,41 +32,30 @@ class GetImagesList implements Runnable {
 		// save only images
 		for (File file : filesList) {
 			if (isImage(file)) {
-				imagesPathsList.add(root + file.getName()); // save full path
+				imagesPathsList.add(ROOT + file.getName()); // save full path
 			}
 		}
-	}
-
-	@Override
-	protected void finalize() {
-		hasInstance = false;
 	}
 
 	@Override
 	public void run() {
 		String txt = "scan %d of " + imagesPathsList.size() + " images";
-		int i = 1;
 
-		for (String path : imagesPathsList) {
+		for (; i <= imagesPathsList.size(); i++) {
 			// add message of percent of images that scanned
-			((TextView) context.findViewById(R.id.tvPercent)).setText(String.format(txt, i++));
+			((TextView) context.findViewById(R.id.tvPercent)).setText(String.format(txt, i + 1));
 
-			// check if image is special
+			String path = imagesPathsList.get(i);
+			boolean needAdd = false;
+
+			// check if image is already scanned
 			if (ImageChecker.isSpecialImage(path)) {
-				specialImagesPaths.add(0, path); // add to the top of the list
-
-				// check if `context` is the current activity
-				if (context == context.getApplicationContext()) {
-					return;
-				}
-
-				context.runOnUiThread(() -> ((ListView) context.findViewById(R.id.list_view)).setAdapter(
-						new CustomImageList(context, specialImagesPaths)
-				));
+				// add image to the top of the list
+				context.runOnUiThread(() -> context.adapter.insert(path, 0));
 			}
 		}
 
-		txt = "finish, " + specialImagesPaths.size() + " special images found";
+		txt = "finish, " + context.adapter.getCount() + " special images found";
 		((TextView) context.findViewById(R.id.tvPercent)).setText(txt);
 	}
 

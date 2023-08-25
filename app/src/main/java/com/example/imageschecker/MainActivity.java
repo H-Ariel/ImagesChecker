@@ -2,39 +2,21 @@ package com.example.imageschecker;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.ListView;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-    }
+	public CustomImageList adapter;
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (!GetImagesList.hasInstance) {
-            new Thread(new GetImagesList(this)).start();
-        }
-    }
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
 
-    /*
-    private boolean isInFront;
-    public boolean isInFront() {
-        return isInFront;
-    }
+		adapter = new CustomImageList(this, new ArrayList<>());
+		((ListView) findViewById(R.id.list_view)).setAdapter(adapter);
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        isInFront = true;
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        isInFront = false;
-    }
-    */
+		new Thread(new GetImagesList(this)).start();
+	}
 }
