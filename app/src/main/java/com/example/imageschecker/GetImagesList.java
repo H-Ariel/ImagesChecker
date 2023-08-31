@@ -30,10 +30,12 @@ class GetImagesList implements Runnable {
 		Arrays.sort(filesList, Comparator.comparingLong(File::lastModified).reversed());
 
 		// save only images
+		int x = 0; // TODO: remove this line
 		for (File file : filesList) {
 			if (isImage(file)) {
 				imagesPathsList.add(ROOT + file.getName()); // save full path
 			}
+			if (x++ > 100) break; // TODO: remove this line
 		}
 	}
 
@@ -41,12 +43,11 @@ class GetImagesList implements Runnable {
 	public void run() {
 		String txt = "scan %d of " + imagesPathsList.size() + " images";
 
-		for (; i <= imagesPathsList.size(); i++) {
+		for (; i < imagesPathsList.size(); i++) {
 			// add message of percent of images that scanned
 			((TextView) context.findViewById(R.id.tvPercent)).setText(String.format(txt, i + 1));
 
 			String path = imagesPathsList.get(i);
-			boolean needAdd = false;
 
 			// check if image is already scanned
 			if (ImageChecker.isSpecialImage(path)) {
