@@ -12,6 +12,7 @@ public class StartActivity extends AppCompatActivity {
 
 	// Defining Permission codes. We can give any value but unique for each permission.
 	private static final int MANAGE_EXTERNAL_STORAGE = 100;
+	private static final int READ_EXTERNAL_STORAGE = 101;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +21,7 @@ public class StartActivity extends AppCompatActivity {
 
 		// ask user to allow storage permission
 		checkPermission(android.Manifest.permission.MANAGE_EXTERNAL_STORAGE, MANAGE_EXTERNAL_STORAGE);
+		checkPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE);
 
 		findViewById(R.id.start_button).setOnClickListener(v -> {
 			Intent intent = new Intent(StartActivity.this, MainActivity.class);
@@ -38,10 +40,17 @@ public class StartActivity extends AppCompatActivity {
 	@Override
 	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
 		if (requestCode == MANAGE_EXTERNAL_STORAGE) {
 			if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
 				Toast.makeText(this, "manage storage permission denied", Toast.LENGTH_SHORT).show();
 			}
 		}
+		else if (requestCode == READ_EXTERNAL_STORAGE) {
+			if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+				Toast.makeText(this, "read storage permission denied", Toast.LENGTH_SHORT).show();
+			}
+		}
+
 	}
 }

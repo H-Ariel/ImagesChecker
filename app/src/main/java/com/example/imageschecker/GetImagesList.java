@@ -35,7 +35,7 @@ class GetImagesList implements Runnable {
 			if (isImage(file)) {
 				imagesPathsList.add(ROOT + file.getName()); // save full path
 			}
-			if (x++ > 100) break; // TODO: remove this line
+			if (x++ > 10) break; // TODO: remove this line
 		}
 	}
 
