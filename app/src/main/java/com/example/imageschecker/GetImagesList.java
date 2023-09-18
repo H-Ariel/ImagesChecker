@@ -30,12 +30,12 @@ class GetImagesList implements Runnable {
 		Arrays.sort(filesList, Comparator.comparingLong(File::lastModified).reversed());
 
 		// save only images
-		int x = 0; // TODO: remove this line
+//		int x = 0; // TODO: remove this line
 		for (File file : filesList) {
 			if (isImage(file)) {
 				imagesPathsList.add(ROOT + file.getName()); // save full path
 			}
-			if (x++ > 10) break; // TODO: remove this line
+//			if (x++ > 10) break; // TODO: remove this line
 		}
 	}
 
