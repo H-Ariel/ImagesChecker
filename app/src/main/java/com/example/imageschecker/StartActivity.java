@@ -1,12 +1,14 @@
 package com.example.imageschecker;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.widget.Toast;
+import android.os.Environment;
+import android.provider.Settings;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 public class StartActivity extends AppCompatActivity {
 
@@ -19,38 +21,25 @@ public class StartActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_start);
 
-		// ask user to allow storage permission
-		checkPermission(android.Manifest.permission.MANAGE_EXTERNAL_STORAGE, MANAGE_EXTERNAL_STORAGE);
-		checkPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE);
+		checkPermissions();
 
 		findViewById(R.id.start_button).setOnClickListener(v -> {
-			Intent intent = new Intent(StartActivity.this, MainActivity.class);
-			StartActivity.this.startActivity(intent);
+			StartActivity.this.startActivity(new Intent(StartActivity.this, MainActivity.class));
 			StartActivity.this.finish();
 		});
 	}
 
-	void checkPermission(String permission, int requestCode) {
-		if (ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_DENIED) {
-			// Requesting the permission
-			ActivityCompat.requestPermissions(this, new String[] { permission }, requestCode);
-		}
-	}
-
-	@Override
-	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-		if (requestCode == MANAGE_EXTERNAL_STORAGE) {
-			if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-				Toast.makeText(this, "manage storage permission denied", Toast.LENGTH_SHORT).show();
-			}
-		}
-		else if (requestCode == READ_EXTERNAL_STORAGE) {
-			if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-				Toast.makeText(this, "read storage permission denied", Toast.LENGTH_SHORT).show();
-			}
+	void checkPermissions() {
+		boolean hasPermission = Environment.isExternalStorageManager();
+		if (!hasPermission) {
+			// open setting and user let permission to app
+			startActivity(new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION));
 		}
 
+		if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+			ActivityCompat.requestPermissions(this,
+					new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
+					READ_EXTERNAL_STORAGE);
+		}
 	}
 }

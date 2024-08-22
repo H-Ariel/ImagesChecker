@@ -2,6 +2,7 @@ package com.example.imageschecker;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+
 import java.util.TreeMap;
 
 // this class is used to check if an image is a special image (special image is an image that related to studies)
@@ -46,7 +47,7 @@ class ImageChecker {
 		return (float) commonPixelCount / pixels.length > 0.6;
 	}
 
-	public static boolean isSpecialImage(String filename){
+	public static boolean isSpecialImage(String filename) {
 		return new ImageChecker(filename).isSpecialImage();
 	}
 }

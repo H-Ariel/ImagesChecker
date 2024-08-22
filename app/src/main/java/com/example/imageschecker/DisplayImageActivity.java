@@ -1,7 +1,10 @@
 package com.example.imageschecker;
 
-import androidx.appcompat.app.AppCompatActivity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class DisplayImageActivity extends AppCompatActivity {
 
@@ -20,13 +23,29 @@ public class DisplayImageActivity extends AppCompatActivity {
 	}
 
 	void deleteImage() {
-		String imagePath = getIntent().getStringExtra("imagePath");
-		// delete image
-		java.io.File file = new java.io.File(imagePath);
-		if (file.delete()) {
-			// remove image from list
-			context.adapter.remove(imagePath);
-			finish();
-		}
+		new AlertDialog.Builder(this)
+				.setTitle("Confirmation")
+				.setMessage("Are you sure?\nThis action cannot be undone.")
+				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						String imagePath = getIntent().getStringExtra("imagePath");
+						if (imagePath != null) {
+							// delete image
+							java.io.File file = new java.io.File(imagePath);
+							if (file.delete()) {
+								// remove image from list
+								context.adapter.remove(imagePath);
+								finish();
+							}
+						}
+					}
+				})
+				.setNegativeButton("No", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+					}
+				})
+				.show();
 	}
 }
