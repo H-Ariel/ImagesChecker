@@ -16,13 +16,16 @@
         android:layout_margin="10dp"
         tools:ignore="MissingConstraints" />
 
-    <ListView
+    <GridView
+        android:id="@+id/grid_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/list_view"
+        android:numColumns="auto_fit"
+        android:columnWidth="100dp"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="10dp"
+        android:horizontalSpacing="10dp"
         android:layout_margin="10dp"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="10sp"
         android:paddingTop="30dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

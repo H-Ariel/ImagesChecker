@@ -1,7 +1,7 @@
 package com.example.imageschecker;
 
 import android.os.Bundle;
-import android.widget.ListView;
+import android.widget.GridView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,8 +16,7 @@ public class MainActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_main);
 
 		adapter = new CustomImageList(this, new ArrayList<>());
-		((ListView) findViewById(R.id.list_view)).setAdapter(adapter);
-
+		((GridView) findViewById(R.id.grid_view)).setAdapter(adapter);
 		DisplayImageActivity.context = this;
 
 		new Thread(new GetImagesList(this)).start();

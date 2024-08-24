@@ -3,11 +3,12 @@ package com.example.imageschecker;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import java.util.TreeMap;
+import java.util.Arrays;
 
-// this class is used to check if an image is a special image (special image is an image that related to studies)
-class ImageChecker {
+public class ImageChecker {
 	int[] pixels;
+	int[] colorCounts;
+	final int N = 64; // downsampling factor for image reduction
 
 	public ImageChecker(String path) {
 		// get image pixels
@@ -15,36 +16,44 @@ class ImageChecker {
 		int[] bmPixels = new int[bitmap.getWidth() * bitmap.getHeight()];
 		bitmap.getPixels(bmPixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
 
-		// reduce image size by N (so it check faster)
-		int N = 64;
+		// reduce image size by N (so it checks faster)
 		this.pixels = new int[bmPixels.length / N];
 		for (int i = 0; i < this.pixels.length; i++)
 			this.pixels[i] = bmPixels[i * N];
+
+		// initialize color count array (assuming there are at most 256 * 256 * 256 colors, adjust if needed)
+		colorCounts = new int[N * N * N];
 	}
 
 	public boolean isSpecialImage() {
-		// create colors dictionary
-		TreeMap<Integer, Integer> colorsCount = new TreeMap<>();
+		// Reset color counts
+		Arrays.fill(colorCounts, 0);
 
-		// iterate pixels
+		int r, g, b;
+		int index;
+
 		for (int pixel : pixels) {
-			int r = (pixel >> 16) & 0xff;
-			int g = (pixel >> 8) & 0xff;
-			int b = pixel & 0xff;
+			r = (pixel >> 16) & 0xff;
+			g = (pixel >> 8) & 0xff;
+			b = pixel & 0xff;
 
-			// reduce colors so we can combine similar colors
-			r /= 64;
-			g /= 64;
-			b /= 64;
+			// Reduce colors to combine similar colors
+			r /= N;
+			g /= N;
+			b /= N;
 
-			int color = (r << 16) + (g << 8) + b, count = 1;
-			if (colorsCount.containsKey(color))
-				count += colorsCount.get(color);
-			colorsCount.put(color, count);
+			index = (r * N + g) * N + b;
+			colorCounts[index]++;
 		}
 
-		int commonPixelCount = colorsCount.values().stream().max(Integer::compare).get();
-		return (float) commonPixelCount / pixels.length > 0.6;
+		int maxCount = 0;
+		for (int count : colorCounts) {
+			if (count > maxCount) {
+				maxCount = count;
+			}
+		}
+
+		return (float) maxCount / pixels.length > 0.6;
 	}
 
 	public static boolean isSpecialImage(String filename) {
